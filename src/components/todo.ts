@@ -1,4 +1,5 @@
 export class TodoComponent {
+  #rootEl: HTMLDivElement | undefined;
   #listEl: HTMLElement | undefined;
   #inputEl: HTMLTextAreaElement | undefined;
 
@@ -8,8 +9,9 @@ export class TodoComponent {
     this.#theme = options?.theme
   }
 
-  mount(targetEl: HTMLElement) {
-    targetEl.classList.add(...classUnify(this.#theme?.root ?? 'todo'));
+  mount(parentEl?: HTMLElement) {
+    this.#rootEl = document.createElement('div');
+    this.#rootEl.classList.add(...classUnify(this.#theme?.root ?? 'todo'));
 
     this.#listEl = document.createElement('ul');
     this.#listEl.classList.add(...classUnify(this.#theme?.list ?? 'todo-list'));
@@ -28,10 +30,14 @@ export class TodoComponent {
       evt.preventDefault()
     })
 
-    targetEl.appendChild(this.#listEl);
-    targetEl.appendChild(footerEl);
+    this.#rootEl.appendChild(this.#listEl);
+    this.#rootEl.appendChild(footerEl);
     footerEl.appendChild(this.#inputEl);
     footerEl.appendChild(addButtonEl);
+
+    if (parentEl) parentEl.appendChild(this.#rootEl)
+
+    return this.#rootEl
   }
 
   addItem(extText?: string) {
@@ -104,7 +110,7 @@ function classUnify(classList: string) {
 }
 
 export const TodoBoostrapTheme: TodoThemeSchema = {
-  root: 'd-flex flex-column',
+  root: 'd-flex flex-column h-100',
   list: 'list-group flex-grow-1 p-2',
   list_item: 'list-group-item d-flex',
   list_itemDone: '',
