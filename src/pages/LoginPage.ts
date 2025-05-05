@@ -65,7 +65,7 @@ export default class LoginPage implements IPage {
             backend.authenticate(loginData)
                 .then(data => {
                     console.log(data)
-                    router.goto('Todo');
+                    router.goto('Start');
                 })
                 .catch(error => {
                     console.error('Error:', error)

@@ -7,7 +7,7 @@ const router: Router = new Router(appEl);
 const backend: TodoApi = new TodoApi('https://todo-back.runasp.net')
 
 // start page
-router.goto('Login');
+router.goto('Start');
 
 if (!appEl) {
     throw new Error('App element not found');

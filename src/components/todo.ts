@@ -1,14 +1,19 @@
+import StartPage from "../pages/StartPage";
+import { BackendTodoStorage } from "../storage/BackendTodoStorage";
+import { IndexedDbTodoStorage } from "../storage/IndexedDbTodoStorage";
+import { LocalTodoStorage } from "../storage/LocalTodoStorage";
+
 export class TodoComponent {
   #rootEl: HTMLDivElement | undefined;
   #listEl: HTMLElement | undefined;
   #inputEl: HTMLTextAreaElement | undefined;
 
   #theme: TodoThemeSchema | undefined
-  #storageProvider: TodoStorageProvider | undefined
+  #storageProvider: BackendTodoStorage | undefined
 
   constructor(options?: TodoOptions) {
     this.#theme = options?.theme
-    this.#storageProvider = options?.storage
+    this.#storageProvider = options?.storage;
   }
 
   mount(parentEl?: HTMLElement) {
@@ -75,7 +80,16 @@ export class TodoComponent {
       if (itemDoneClass) itemEl.classList.toggle(itemDoneClass);
 
       const itemDoneTextClass = this.#theme?.list_item_textDone || ''
-      if (itemDoneTextClass) textEl.classList.toggle(itemDoneTextClass);
+      if (itemDoneTextClass) {
+        textEl.classList.toggle(itemDoneTextClass);
+        /////////////////
+        let data = itemEl.dataset.item;
+        let object = JSON.parse(data!) as TodoItem;
+        object.isChecked = checkEl.checked;
+        //console.log(object.isChecked);
+        this.#storageProvider?.onItemUpdate(object);
+        /////////////////
+      } 
     });
     checkEl.classList.add(...classUnify(this.#theme?.list_item_check ?? ''))
 
@@ -111,6 +125,12 @@ export class TodoComponent {
         editButton.textContent = "Zapisz";
       } else {
         textEl.textContent = textEditEl.value;
+        /////////////////
+        const data = itemEl.dataset.item;
+        const object = JSON.parse(data!) as TodoItem;
+        object.text = textEl.textContent;
+        this.#storageProvider?.onItemUpdate(object);
+        ////////////////
         textEl.classList.remove(...classUnify(this.#theme?.hidden ?? 'hidded'));
         itemEl.removeChild(textEditEl);
         deleteButton.disabled = false;

@@ -9,7 +9,7 @@ export class Router {
         this.#appEl = appEl;
     }
 
-    public goto(page: "Login" | "Todo"): void {
+    public goto(page: "Start" | "Login" | "Todo" ): void {
         if (this.#currentPageInstance) {
             this.#currentPageInstance.unmount();
         }
@@ -23,6 +23,7 @@ export class Router {
             const page = new module.default() as IPage;
             this.#currentPageInstance = page;
             page.mount(this.#appEl);
+
         });
     }
 

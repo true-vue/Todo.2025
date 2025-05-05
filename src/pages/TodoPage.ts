@@ -1,7 +1,9 @@
 import { TodoComponent, TodoBoostrapTheme } from '../components/todo';
 import { BackendTodoStorage } from '../storage/BackendTodoStorage';
-// import { IndexedDbTodoStorage } from '../storage/IndexedDbTodoStorage';
+ import { IndexedDbTodoStorage } from '../storage/IndexedDbTodoStorage';
+ import { LocalTodoStorage } from '../storage/LocalTodoStorage';
 import { IPage } from './IPage';
+import StartPage from './StartPage';
 
 export default class TodoPage implements IPage {
     #rootElement: HTMLElement;
@@ -11,9 +13,24 @@ export default class TodoPage implements IPage {
         this.#rootElement = document.createElement('div');
         this.#rootElement.classList.add('d-flex', 'flex-column', 'vh-100', 'bg-light');
 
+        const storageType = StartPage.getStorageType();
+
+        let storage;
+        switch (storageType) {
+            case 'backend':
+                storage = new BackendTodoStorage();
+                break;
+            case 'indexedDb':
+                storage = new IndexedDbTodoStorage();
+                break;
+            case 'localStorage':
+                storage = new LocalTodoStorage();
+                break;
+        }
+
         this.#todoComponent = new TodoComponent({
             theme: TodoBoostrapTheme,
-            storage: new BackendTodoStorage()
+            storage: storage
         });
     }
 
